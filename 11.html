@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>简易记账本</title>
+<style>
+    /* 整体页面样式 */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+        background-image: url('C:\Users\DELL\Desktop\preview.jpg'); /* 背景图像的URL */
+        background-size: cover;
+        background-attachment: fixed;
+    }
+
+    /* 页眉样式 */
+    h1 {
+        color: #4CAF50;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 2em;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    /* 表单样式 */
+    form {
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        max-width: 400px;
+        margin: auto;
+    }
+
+    /* 标签样式 */
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    /* 输入框样式 */
+    input[type="date"],
+    input[type="text"],
+    input[type="number"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    /* 按钮样式 */
+    button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    /* 交易记录标题样式 */
+    h2 {
+        color: #333;
+        border-bottom: 2px solid #4CAF50;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 1.5em;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 交易记录列表样式 */
+    ul {
+        list-style: none;
+        padding: 0;
+        max-width: 600px;
+        margin: auto;
+    }
+
+    li {
+        background-color: #fff;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+</style>
+<script>
+    // 初始化LocalStorage中的记账数据（如果尚未存在）
+    if (!localStorage.getItem('transactions')) {
+        localStorage.setItem('transactions', JSON.stringify([]));
+    }
+
+    // 加载并显示所有交易
+    function loadTransactions() {
+        const transactions = JSON.parse(localStorage.getItem('transactions'));
+        const list = document.getElementById('transaction-list');
+        list.innerHTML = ''; // 清空现有列表
+
+        transactions.forEach((transaction, index) => {
+            const item = document.createElement('li');
+            item.textContent = `${transaction.date} - ${transaction.description} - ${transaction.amount}元`;
+            list.appendChild(item);
+        });
+    }
+
+    // 添加新交易
+    function addTransaction() {
+        const date = document.getElementById('date').value;
+        const description = document.getElementById('description').value;
+        const amount = parseFloat(document.getElementById('amount').value);
+
+        if (!isNaN(amount)) {
+            const transactions = JSON.parse(localStorage.getItem('transactions'));
+            transactions.push({ date, description, amount });
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            loadTransactions(); // 重新加载交易列表
+            // 清空表单
+            document.getElementById('transaction-form').reset();
+        } else {
+            alert('金额必须是一个有效的数字！');
+        }
+    }
+
+    window.onload = loadTransactions; // 页面加载时加载交易
+</script>
+</head>
+<body>
+
+<h1>简易记账本</h1>
+
+<form id="transaction-form">
+    <label for="date">日期:</label>
+    <input type="date" id="date" required>
+    <label for="description">描述:</label>
+    <input type="text" id="description" required>
+    <label for="amount">金额:</label>
+    <input type="number" step="0.01" id="amount" required>
+    <button type="button" onclick="addTransaction()">添加交易</button>
+</form>
+
+<h2>交易记录</h2>
+<ul id="transaction-list"></ul>
+
+</body>
+</html>
