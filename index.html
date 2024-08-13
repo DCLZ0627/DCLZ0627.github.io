@@ -103,22 +103,21 @@
     }
 </style>
 <script>
-    // 初始化LocalStorage中的记账数据（如果尚未存在）
-    if (!localStorage.getItem('transactions')) {
-        localStorage.setItem('transactions', JSON.stringify([]));
-    }
-
     // 加载并显示所有交易
     function loadTransactions() {
-        const transactions = JSON.parse(localStorage.getItem('transactions'));
-        const list = document.getElementById('transaction-list');
-        list.innerHTML = ''; // 清空现有列表
+        fetch('JS.json') // 或者 'transactions.json'
+            .then(response => response.json())
+            .then(transactions => {
+                const list = document.getElementById('transaction-list');
+                list.innerHTML = ''; // 清空现有列表
 
-        transactions.forEach((transaction, index) => {
-            const item = document.createElement('li');
-            item.textContent = `${transaction.date} - ${transaction.description} - ${transaction.amount}元`;
-            list.appendChild(item);
-        });
+                transactions.forEach(transaction => {
+                    const item = document.createElement('li');
+                    item.textContent = `${transaction.date} - ${transaction.description} - ${transaction.amount}元`;
+                    list.appendChild(item);
+                });
+            })
+            .catch(error => console.error('Error loading transactions:', error));
     }
 
     // 添加新交易
@@ -128,12 +127,26 @@
         const amount = parseFloat(document.getElementById('amount').value);
 
         if (!isNaN(amount)) {
-            const transactions = JSON.parse(localStorage.getItem('transactions'));
-            transactions.push({ date, description, amount });
-            localStorage.setItem('transactions', JSON.stringify(transactions));
-            loadTransactions(); // 重新加载交易列表
-            // 清空表单
-            document.getElementById('transaction-form').reset();
+            fetch('data/transactions.json') // 或者 'transactions.json'
+                .then(response => response.json())
+                .then(transactions => {
+                    transactions.push({ date, description, amount });
+
+                    // 将更新后的数据发送回服务器（这里需要用实际的服务器地址）
+                    fetch('https://api.example.com/update-transactions', { // 使用实际的 API URL
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(transactions)
+                    })
+                    .then(() => {
+                        loadTransactions(); // 重新加载交易列表
+                        document.getElementById('transaction-form').reset(); // 清空表单
+                    })
+                    .catch(error => console.error('Error updating transactions:', error));
+                })
+                .catch(error => console.error('Error loading transactions:', error));
         } else {
             alert('金额必须是一个有效的数字！');
         }
