@@ -11,7 +11,7 @@
         color: #333;
         margin: 0;
         padding: 20px;
-        background-image: url('preview.jpg'); /* 背景图像的URL */
+        background-image: url('preview.jpg'); /* 替换为实际的背景图像URL */
         background-size: cover;
         background-attachment: fixed;
     }
@@ -116,7 +116,7 @@
 
         transactions.forEach((transaction, index) => {
             const item = document.createElement('li');
-            item.textContent = ${transaction.date} - ${transaction.description} - ${transaction.amount}元;
+            item.textContent = `${transaction.date} - ${transaction.description} - ${transaction.amount}元`;
             list.appendChild(item);
         });
     }
